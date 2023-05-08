@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 8080
 
 spring:
   application:
@@ -9,21 +9,15 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
-
   profiles:
     active: local
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/delivery-service
-    username: sa
-    password: 1234
-    driver-class-name: org.h2.Driver
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
-    generate-ddl: true
-    database: h2
-    defer-datasource-initialization: true
+#    generate-ddl: true
+#    database: h2
+#    defer-datasource-initialization: true
 
 eureka:
   instance:
@@ -33,3 +27,19 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  paths-to-match:
+    - /delivery-service/**
