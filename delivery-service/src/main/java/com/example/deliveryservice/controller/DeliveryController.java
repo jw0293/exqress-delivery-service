@@ -4,6 +4,7 @@ import com.example.deliveryservice.dto.DeliveryDto;
 import com.example.deliveryservice.entity.DeliveryItem;
 import com.example.deliveryservice.service.DeliveryService;
 import com.example.deliveryservice.vo.RequestItem;
+import com.example.deliveryservice.vo.ResponseError;
 import com.example.deliveryservice.vo.ResponseItem;
 import com.example.deliveryservice.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +21,7 @@ import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -56,9 +58,8 @@ public class DeliveryController {
     @Operation(summary = "배송 물품 입력", description = "사용자가 주문한 배송 물품이 저장됩니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "저장성공", content = @Content(schema = @Schema(implementation = ResponseItem.class))),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
     @PostMapping("/{userId}/items")
     public ResponseEntity<ResponseItem> createDeliveryItem(@PathVariable("userId") String userId,
