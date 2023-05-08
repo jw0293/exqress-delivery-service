@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 0
 
 spring:
   application:
@@ -9,6 +9,11 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
   profiles:
     active: local
   jpa:

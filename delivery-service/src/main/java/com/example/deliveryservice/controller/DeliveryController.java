@@ -31,7 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("/delivery-service")
+@RequestMapping("/")
 public class DeliveryController {
 
     private final Environment env;
