@@ -1,13 +1,12 @@
 package com.example.deliveryservice.service;
 
-import com.example.deliveryservice.dto.DeliveryDto;
-import com.example.deliveryservice.entity.DeliveryItem;
-import com.example.deliveryservice.vo.RequestItem;
-import com.example.deliveryservice.vo.ResponseItem;
-import org.springframework.http.ResponseEntity;
+import com.example.userservice.dto.UserDto;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface DeliveryService {
+public interface UserService extends UserDetailsService {
 
-    Iterable<DeliveryItem> getItemsByUserId(String userId);
-    DeliveryDto createDeliveryItem(DeliveryDto deliveryDto);
+    UserDto createUser(UserDto userDto);
+    UserDto getUserDetailsByEmail(String email);
+
+    UserDto getUserByUserId(String userId);
 }
