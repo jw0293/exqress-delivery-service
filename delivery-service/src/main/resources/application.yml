@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 4001
 
 spring:
   application:
@@ -37,7 +37,7 @@ eureka:
 
 springdoc:
   swagger-ui:
-    path: https://exqress-deliver.com/swagger-ui.html
+    path: /swagger-ui.html
     groups-order: DESC
     operationsSorter: method
     disable-swagger-default-url: true
