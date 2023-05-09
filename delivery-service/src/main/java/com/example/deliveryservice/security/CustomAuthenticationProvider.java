@@ -1,8 +1,8 @@
-package com.example.userservice.security;
+package com.example.deliveryservice.security;
 
 
-import com.example.userservice.service.UserService;
-import com.example.userservice.service.UserServiceImpl;
+import com.example.deliveryservice.service.DeliveryService;
+import com.example.deliveryservice.service.DeliveryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -17,7 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    private final UserService userService;
+    private final DeliveryServiceImpl deliveryService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -31,7 +31,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         log.info("Email : {}", token.getName());
         log.info("Pwd : {}", token.getCredentials());
 
-        UserDetails userDetails = userService.loadUserByUsername(email);
+        UserDetails userDetails = deliveryService.loadUserByUsername(email);
 
         log.info("UserDetails Email : {}", userDetails.getUsername());
         log.info("UserDetails Pwd : {}", userDetails.getPassword());

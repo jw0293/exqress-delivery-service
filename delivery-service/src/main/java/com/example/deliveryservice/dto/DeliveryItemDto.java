@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class DeliveryDto implements Serializable {
+public class DeliveryItemDto implements Serializable {
 
     private String deliveryId;
     private String userId;

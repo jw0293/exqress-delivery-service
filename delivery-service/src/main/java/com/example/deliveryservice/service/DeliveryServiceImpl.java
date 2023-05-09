@@ -1,10 +1,8 @@
 package com.example.deliveryservice.service;
 
-import com.example.userservice.client.DeliveryServiceClient;
-import com.example.userservice.dto.UserDto;
-import com.example.userservice.jpa.UserEntity;
-import com.example.userservice.repository.UserRepository;
-import com.example.userservice.vo.ResponseItem;
+import com.example.deliveryservice.dto.DeliveryDto;
+import com.example.deliveryservice.entity.DeliveryEntity;
+import com.example.deliveryservice.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -22,17 +20,16 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserService{
+public class DeliveryServiceImpl implements DeliveryService {
 
     private final Environment env;
-    private final RestTemplate restTemplate;
-    private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final DeliveryServiceClient deliveryServiceClient;
+    private final DeliveryRepository deliveryRepository;
+    // private final DeliveryServiceClient deliveryServiceClient;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user =  userRepository.findByEmail(username);
+        DeliveryEntity user =  deliveryRepository.findByEmail(username);
 
         if(user == null)
             throw new UsernameNotFoundException(username);
@@ -43,42 +40,42 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDto createUser(UserDto userDto) {
-        userDto.setUserId(UUID.randomUUID().toString());
+    public DeliveryDto createUser(DeliveryDto userDto) {
+        userDto.setDeliveryId(UUID.randomUUID().toString());
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        UserEntity userEntity = mapper.map(userDto, UserEntity.class);
+        DeliveryEntity userEntity = mapper.map(userDto, DeliveryEntity.class);
         userEntity.setEncryptedPwd(bCryptPasswordEncoder.encode(userDto.getPwd()));
 
-        userRepository.save(userEntity);
+        deliveryRepository.save(userEntity);
 
-        UserDto returnUserDto = mapper.map(userEntity, UserDto.class);
+        DeliveryDto returnDeliveryDto = mapper.map(userEntity, DeliveryDto.class);
 
-        return returnUserDto;
+        return returnDeliveryDto;
     }
 
     @Override
-    public UserDto getUserDetailsByEmail(String email) {
-        UserEntity userEntity = userRepository.findByEmail(email);
+    public DeliveryDto getUserDetailsByEmail(String email) {
+        DeliveryEntity deliveryEntity = deliveryRepository.findByEmail(email);
 
-        if(userEntity == null){
+        if(deliveryEntity == null){
             throw new IllegalArgumentException();
         }
 
-        return new ModelMapper().map(userEntity, UserDto.class);
+        return new ModelMapper().map(deliveryEntity, DeliveryDto.class);
     }
 
     @Override
-    public UserDto getUserByUserId(String userId) {
-        UserEntity userEntity = userRepository.findByUserId(userId);
+    public DeliveryDto getUserByUserId(String userId) {
+        DeliveryEntity userEntity = deliveryRepository.findByDeliveryId(userId);
 
         if(userEntity == null){
             throw new UsernameNotFoundException("User not found!");
         }
 
-        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+        DeliveryDto userDto = new ModelMapper().map(userEntity, DeliveryDto.class);
 
         /** Using RestTemplate **/
 //        String deliveryUrl = String.format(env.getProperty("order_service.url"), userId);
@@ -88,8 +85,10 @@ public class UserServiceImpl implements UserService{
 //                });
 
         /** Using a feign client **/
-        List<ResponseItem> itemList = deliveryServiceClient.getItems(userId);
-        userDto.setItems(itemList);
+
+
+//        List<ResponseItem> itemList = deliveryServiceClient.getItems(userId);
+//        userDto.setItems(itemList);
 
         return userDto;
     }

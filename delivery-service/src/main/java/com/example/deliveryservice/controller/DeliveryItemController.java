@@ -2,13 +2,14 @@ package com.example.deliveryservice.controller;
 
 import com.example.deliveryservice.dto.DeliveryItemDto;
 import com.example.deliveryservice.entity.DeliveryItem;
-import com.example.deliveryservice.service.DeliveryItemService;
 import com.example.deliveryservice.service.DeliveryItemServiceImpl;
 import com.example.deliveryservice.vo.RequestItem;
 import com.example.deliveryservice.vo.ResponseError;
 import com.example.deliveryservice.vo.ResponseItem;
 import com.example.deliveryservice.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,24 +27,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Tag(name = "배송기사", description = "배송 기사 서비스 관련 API입니다.")
+@Tag(name = "배송 기사 물품", description = "배송 기사 물품 관련 API입니다.")
 @RequiredArgsConstructor
 @Slf4j
 @RestController
 @RequestMapping("/")
-public class DeliveryController {
+public class DeliveryItemController {
 
     private final Environment env;
     private final DeliveryItemServiceImpl deliveryService;
 
-    @GetMapping("/welcome")
-    public ResponseEntity<String> hello(){
-        log.error("Good!");
-        return ResponseEntity.status(HttpStatus.OK).body("Welcome to delivery Service");
-    }
-
     @GetMapping("/{userId}/items")
-    public ResponseEntity<Result> getItems(@PathVariable("userId") String userId){
+    public ResponseEntity<Result> getItems(@Parameter(name = "id", description = "user 의 id", in = ParameterIn.PATH)
+                                               @PathVariable("userId") String userId){
         Iterable<DeliveryItem> itemList = deliveryService.getItemsByUserId(userId);
 
         List<ResponseItem> responseItems = new ArrayList<>();

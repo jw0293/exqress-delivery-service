@@ -1,10 +1,12 @@
-package com.example.userservice.security;
+package com.example.deliveryservice.security;
 
-import com.example.userservice.constants.AuthConstants;
-import com.example.userservice.dto.UserDto;
-import com.example.userservice.service.TokenServiceImpl;
-import com.example.userservice.service.UserService;
-import com.example.userservice.vo.RequestLogin;
+import com.example.deliveryservice.constants.AuthConstants;
+import com.example.deliveryservice.dto.DeliveryDto;
+import com.example.deliveryservice.service.DeliveryService;
+import com.example.deliveryservice.service.DeliveryServiceImpl;
+import com.example.deliveryservice.service.TokenService;
+import com.example.deliveryservice.service.TokenServiceImpl;
+import com.example.deliveryservice.vo.RequestLogin;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,8 +27,8 @@ import java.util.ArrayList;
 @Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final UserService userService;
     private final TokenServiceImpl tokenService;
+    private final DeliveryServiceImpl deliveryService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -56,15 +58,15 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
 
-        String userName = ((User) authResult.getPrincipal()).getUsername();
-        UserDto userDetails = userService.getUserDetailsByEmail(userName);
+        String deliveryName = ((User) authResult.getPrincipal()).getUsername();
+        DeliveryDto deliveryDetails = deliveryService.getUserDetailsByEmail(deliveryName);
 
-        String token = tokenService.createToken(userDetails);
+        String token = tokenService.createToken(deliveryDetails);
 
         log.info("Token : {}", token);
 
         response.addHeader(AuthConstants.AUTH_HEADER, token);
-        response.addHeader(AuthConstants.USERID_HEADER, userDetails.getUserId());
+        response.addHeader(AuthConstants.USERID_HEADER, deliveryDetails.getDeliveryId());
 
     }
 }

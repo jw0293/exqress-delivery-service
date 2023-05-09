@@ -1,10 +1,10 @@
 package com.example.deliveryservice.repository;
 
-import com.example.userservice.jpa.UserEntity;
+import com.example.deliveryservice.entity.DeliveryEntity;
 import org.springframework.data.repository.CrudRepository;
 
-public interface UserRepository extends CrudRepository<UserEntity, Long> {
+public interface DeliveryRepository extends CrudRepository<DeliveryEntity, Long> {
 
-    UserEntity findByEmail(String username);
-    UserEntity findByUserId(String userId);
+    DeliveryEntity findByEmail(String username);
+    DeliveryEntity findByDeliveryId(String userId);
 }

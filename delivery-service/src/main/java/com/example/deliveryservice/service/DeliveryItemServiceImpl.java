@@ -1,23 +1,20 @@
 package com.example.deliveryservice.service;
 
-import com.example.deliveryservice.dto.DeliveryDto;
+import com.example.deliveryservice.dto.DeliveryItemDto;
 import com.example.deliveryservice.entity.DeliveryItem;
-import com.example.deliveryservice.repository.DeliveryRepository;
-import com.example.deliveryservice.vo.RequestItem;
-import com.example.deliveryservice.vo.ResponseItem;
+import com.example.deliveryservice.repository.DeliveryItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-public class DeliveryServiceImpl implements DeliveryService {
+public class DeliveryItemServiceImpl implements DeliveryItemService {
 
-    private final DeliveryRepository deliveryRepository;
+    private final DeliveryItemRepository deliveryRepository;
 
     @Override
     public Iterable<DeliveryItem> getItemsByUserId(String userId) {
@@ -25,7 +22,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public DeliveryDto createDeliveryItem(DeliveryDto deliveryDto) {
+    public DeliveryItemDto createDeliveryItem(DeliveryItemDto deliveryDto) {
         deliveryDto.setDeliveryId(UUID.randomUUID().toString());
 
         ModelMapper mapper = new ModelMapper();
@@ -35,6 +32,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         deliveryRepository.save(deliveryItem);
 
-        return mapper.map(deliveryItem, DeliveryDto.class);
+        return mapper.map(deliveryItem, DeliveryItemDto.class);
     }
 }
