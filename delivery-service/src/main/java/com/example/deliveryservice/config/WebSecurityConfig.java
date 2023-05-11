@@ -55,6 +55,7 @@ public class WebSecurityConfig {
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(tokenService, deliveryService);
+        authenticationFilter.setFilterProcessesUrl("/delivery/login");
         authenticationFilter.setAuthenticationManager(authenticationManager());
 
         return authenticationFilter;
