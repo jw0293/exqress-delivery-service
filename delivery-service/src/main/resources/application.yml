@@ -3,7 +3,9 @@ server:
 
 spring:
   application:
-    name: delivery-service
+    name: capstone
+#  profiles:
+#    active: local
 #  h2:
 #    console:
 #      enabled: true
@@ -15,8 +17,6 @@ spring:
 #    username: sa
 #    password:
 #    driver-class-name: org.h2.Driver
-#  profiles:
-#    active: local
   jpa:
     show-sql: true
     hibernate:
