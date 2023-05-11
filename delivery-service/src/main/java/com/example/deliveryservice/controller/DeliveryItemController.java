@@ -40,6 +40,11 @@ public class DeliveryItemController {
     @GetMapping("/info")
     public String getInfo(){
         log.info("spring.datasource.url : {}", env.getProperty("spring.datasource.url"));
+
+        String dataSourceUrl = env.getProperty("spring.datasource.url");
+        if(dataSourceUrl == null){
+            return "Not Haven!";
+        }
         return env.getProperty("spring.datasource.url");
     }
 
