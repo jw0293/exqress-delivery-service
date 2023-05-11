@@ -7,6 +7,8 @@ import com.example.deliveryservice.vo.ResponseDelivery;
 import com.example.deliveryservice.vo.ResponseError;
 import com.example.deliveryservice.vo.ResponseItem;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,10 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "배송 기사", description = "배송 기사 관련 API입니다.")
 @RequiredArgsConstructor
@@ -39,11 +38,16 @@ public class DeliveryController {
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
     @PostMapping("/deliverys")
-    public ResponseEntity createUser(@RequestBody RequestDelivery user){
+    public ResponseEntity createUser(@RequestBody RequestDelivery delivery){
+        String email = delivery.getEmail();
+        if(deliveryService.isDuplicatedUser(email)) {
+            return ResponseEntity.status(409).body("이미 존재하는 회원입니다");
+        }
+
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        DeliveryDto deliveryDto = mapper.map(user, DeliveryDto.class);
+        DeliveryDto deliveryDto = mapper.map(delivery, DeliveryDto.class);
         deliveryService.createUser(deliveryDto);
 
         ResponseDelivery responseDelivery = mapper.map(deliveryDto, ResponseDelivery.class);

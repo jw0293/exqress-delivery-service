@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface DeliveryRepository extends CrudRepository<DeliveryEntity, Long> {
 
-    DeliveryEntity findByEmail(String username);
+    DeliveryEntity findByEmail(String email);
     DeliveryEntity findByDeliveryId(String userId);
 }

@@ -10,4 +10,5 @@ public interface DeliveryService extends UserDetailsService {
     DeliveryDto getUserDetailsByEmail(String email);
 
     DeliveryDto getUserByUserId(String userId);
+    boolean isDuplicatedUser(String email);
 }

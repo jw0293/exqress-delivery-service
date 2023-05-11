@@ -92,4 +92,13 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         return userDto;
     }
+
+    @Override
+    public boolean isDuplicatedUser(String email) {
+        DeliveryEntity deliveryEntity = deliveryRepository.findByEmail(email);
+        if(deliveryEntity == null) {
+            return false;
+        }
+        return true;
+    }
 }
