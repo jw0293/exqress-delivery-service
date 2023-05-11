@@ -1,5 +1,6 @@
 package com.example.deliveryservice.controller;
 
+import com.example.deliveryservice.config.MyConfig;
 import com.example.deliveryservice.dto.DeliveryDto;
 import com.example.deliveryservice.service.DeliveryServiceImpl;
 import com.example.deliveryservice.vo.RequestDelivery;
@@ -29,7 +30,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/")
 public class DeliveryController {
 
+    private final MyConfig myConfig;
     private final DeliveryServiceImpl deliveryService;
+
+    @GetMapping("/config")
+    public ResponseEntity<String> config() {
+        System.out.println(myConfig);
+        return ResponseEntity.ok(myConfig.toString());
+    }
 
     @Operation(summary = "배송 기사 회원가입", description = "배송 기사가 회원가입을 시도합니다.")
     @ApiResponses({
