@@ -37,6 +37,12 @@ public class DeliveryItemController {
     private final Environment env;
     private final DeliveryItemServiceImpl deliveryService;
 
+    @GetMapping("/info")
+    public String getInfo(){
+        log.info("spring.datasource.url : {}", env.getProperty("spring.datasource.url"));
+        return env.getProperty("spring.datasource.url");
+    }
+
     @GetMapping("/{userId}/items")
     public ResponseEntity<Result> getItems(@Parameter(name = "id", description = "user 의 id", in = ParameterIn.PATH)
                                                @PathVariable("userId") String userId){
