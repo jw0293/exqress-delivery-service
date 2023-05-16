@@ -1,14 +1,24 @@
 package com.example.deliveryservice.service;
 
 import com.example.deliveryservice.dto.DeliveryDto;
-import com.example.deliveryservice.entity.DeliveryEntity;
+import com.example.deliveryservice.dto.DeliveryMapQr;
+import com.example.deliveryservice.vo.request.RequestLogin;
+import com.example.deliveryservice.vo.request.RequestQRcode;
+import com.example.deliveryservice.vo.response.ResponseData;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface DeliveryService extends UserDetailsService {
 
     DeliveryDto createUser(DeliveryDto userDto);
     DeliveryDto getUserDetailsByEmail(String email);
-
-    DeliveryDto getUserByUserId(String userId);
     boolean isDuplicatedUser(String email);
+    String getDeliveryIdThroughRequest(HttpServletRequest request);
+
+    DeliveryMapQr mappingQRcode(String deliveryId, RequestQRcode qRcode);
+    ResponseEntity<ResponseData> login(HttpServletRequest request, HttpServletResponse response, RequestLogin login);
+
+    ResponseEntity updateParcelCompleteState(RequestQRcode qRcode);
 }
