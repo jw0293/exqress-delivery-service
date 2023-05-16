@@ -1,10 +1,11 @@
-package com.example.userservice.utils;
+package com.example.deliveryservice.utils;
 
-import com.example.userservice.dto.TokenInfo;
-import com.example.userservice.dto.UserDto;
-import com.example.userservice.entity.UserEntity;
-import com.example.userservice.repository.UserRepository;
-import com.example.userservice.vo.response.ResponseUser;
+import com.example.deliveryservice.StatusEnum;
+import com.example.deliveryservice.dto.TokenInfo;
+import com.example.deliveryservice.entity.DeliveryEntity;
+import com.example.deliveryservice.repository.DeliveryRepository;
+import com.example.deliveryservice.vo.response.ResponseData;
+import com.example.deliveryservice.vo.response.ResponseDelivery;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -24,7 +30,8 @@ public class TokenUtils {
 
     private final Environment env;
     private static String secretKey;
-    private final UserRepository userRepository;
+    private final RedisTemplate redisTemplate;
+    private final DeliveryRepository deliveryRepository;
 
     @PostConstruct
     protected void init(){
@@ -73,10 +80,16 @@ public class TokenUtils {
     public boolean isValidToken(String token){
         try {
             log.info("Valid Token : {}", token);
-            Date expiration = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration();
-            log.info("Get expiration : {}",expiration.getTime());
+            Date expiration;
+            try {
+                expiration = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration();
+            } catch (Exception e) {
+                log.info("Expiration Error", e);
+                return false;
+            }
+            log.info("Get expiration : {}", expiration.getTime());
             Long now = System.currentTimeMillis();
-            if(expiration.getTime() - now > 0) {
+            if (expiration.getTime() - now > 0) {
                 return true;
             }
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
@@ -87,19 +100,51 @@ public class TokenUtils {
             log.info("Unsupported JWT Token", e);
         } catch (IllegalArgumentException e) {
             log.info("JWT claims string is empty.", e);
+        } catch (SignatureException e){
+            log.info("JWT signature does not match");
+        } catch (Exception e){
+            log.info("EXCEPTION");
         }
+
+        log.info("False로 반환");
         return false;
     }
 
-    public ResponseUser getAuthentication(String token){
+    public TokenInfo reissue(String token){
+        ResponseDelivery authentication = getAuthentication(token);
+        // 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
+        String refreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getDeliveryId());
+
+        // (추가) 로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리
+        if(ObjectUtils.isEmpty(refreshToken)) {
+            //return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "잘못된 요청입니다.", "", ""), HttpStatus.BAD_REQUEST);
+            return null;
+        }
+        if(!refreshToken.equals(token)) {
+            //return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "Refresh 토큰이 일치하지 않습니다.", "", ""), HttpStatus.BAD_REQUEST);
+            return null;
+        }
+
+        // 4. 새로운 토큰 생성
+        TokenInfo newTokenInfo = generateToken(authentication.getDeliveryId());
+        log.info("New Token Success !");
+
+        // 5. RefreshToken Redis 업데이트
+        redisTemplate.opsForValue()
+                .set("RT:" + authentication.getDeliveryId(), newTokenInfo.getRefreshToken(), newTokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+
+        return newTokenInfo;
+    }
+
+    public ResponseDelivery getAuthentication(String token){
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        UserEntity userByEmail = userRepository.findByUserId(Jwts.parser().setSigningKey(secretKey)
+        DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryId(Jwts.parser().setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody().getSubject());
 
-        return mapper.map(userByEmail, ResponseUser.class);
+        return mapper.map(deliveryEntity, ResponseDelivery.class);
     }
 
     public Long getExpiration(String token){

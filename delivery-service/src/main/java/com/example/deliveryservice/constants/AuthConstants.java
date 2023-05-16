@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthConstants {
 
-    public static final String AUTH_HEADER = "Token";
-    public static final String USERID_HEADER = "userId";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String AUTH_HEADER = "accessToken";
+    public static final String REFRESH_HEADER = "refreshToken";
+    public static final String TOKEN_TYPE = "Bearer";
 }
