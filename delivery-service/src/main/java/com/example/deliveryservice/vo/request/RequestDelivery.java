@@ -1,4 +1,4 @@
-package com.example.deliveryservice.vo;
+package com.example.deliveryservice.vo.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

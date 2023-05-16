@@ -1,8 +1,6 @@
-package com.example.userservice.vo.response;
+package com.example.deliveryservice.vo.response;
 
-import com.example.userservice.StatusEnum;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
@@ -12,4 +10,5 @@ public class ResponseData {
     private String status;
     private String message;
     private Object data;
+    private String accessToken;
 }

@@ -1,4 +1,4 @@
-package com.example.deliveryservice.vo;
+package com.example.deliveryservice.vo.response;
 
 import com.example.deliveryservice.entity.Address;
 import io.swagger.v3.oas.annotations.media.Schema;
