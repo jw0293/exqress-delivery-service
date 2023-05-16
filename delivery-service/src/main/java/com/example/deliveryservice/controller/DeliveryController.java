@@ -1,20 +1,25 @@
 package com.example.deliveryservice.controller;
 
+import com.example.deliveryservice.StatusEnum;
 import com.example.deliveryservice.config.MyConfig;
 import com.example.deliveryservice.dto.DeliveryDto;
 import com.example.deliveryservice.service.DeliveryServiceImpl;
-import com.example.deliveryservice.vo.RequestDelivery;
-import com.example.deliveryservice.vo.ResponseDelivery;
-import com.example.deliveryservice.vo.ResponseError;
-import com.example.deliveryservice.vo.ResponseItem;
+import com.example.deliveryservice.service.TokenServiceImpl;
+import com.example.deliveryservice.utils.CookieUtils;
+import com.example.deliveryservice.vo.request.RequestDelivery;
+import com.example.deliveryservice.vo.request.RequestLogin;
+import com.example.deliveryservice.vo.request.RequestToken;
+import com.example.deliveryservice.vo.response.ResponseData;
+import com.example.deliveryservice.vo.response.ResponseDelivery;
+import com.example.deliveryservice.vo.response.ResponseError;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -31,13 +36,8 @@ import org.springframework.web.bind.annotation.*;
 public class DeliveryController {
 
     private final MyConfig myConfig;
+    private final TokenServiceImpl tokenService;
     private final DeliveryServiceImpl deliveryService;
-
-    @GetMapping("/config")
-    public ResponseEntity<String> config() {
-        System.out.println(myConfig);
-        return ResponseEntity.ok(myConfig.toString());
-    }
 
     @Operation(summary = "배송 기사 회원가입", description = "배송 기사가 회원가입을 시도합니다.")
     @ApiResponses({
@@ -46,10 +46,10 @@ public class DeliveryController {
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
     @PostMapping("/deliverys")
-    public ResponseEntity createUser(@RequestBody RequestDelivery delivery){
+    public ResponseEntity<ResponseData> createUser(@RequestBody RequestDelivery delivery){
         String email = delivery.getEmail();
         if(deliveryService.isDuplicatedUser(email)) {
-            return ResponseEntity.status(409).body("이미 존재하는 회원입니다");
+            return new ResponseEntity<>(new ResponseData(StatusEnum.EXISTED.getStatusCode(), "이미 존재하는 회원입니다.", "", ""), HttpStatus.CONFLICT);
         }
 
         ModelMapper mapper = new ModelMapper();
@@ -60,7 +60,33 @@ public class DeliveryController {
 
         ResponseDelivery responseDelivery = mapper.map(deliveryDto, ResponseDelivery.class);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDelivery);
+        return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "회원가입 성공", responseDelivery, ""), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Token 재발급", description = "배송 기사가 회원가입을 시도합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
+    })
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+        return tokenService.reissue(request, response);
+    }
+
+    @PostMapping("/logouts")
+    public ResponseEntity<?> logout(@RequestBody RequestToken logoutToken){
+        log.info("Logout accessToken : {}", logoutToken.getAccessToken());
+        log.info("Logout refreshToken : {}", logoutToken.getRefreshToken());
+
+        return tokenService.logout(logoutToken);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody RequestLogin login, HttpServletRequest request, HttpServletResponse response){
+        ResponseEntity<ResponseData> responseData = deliveryService.login(request, response, login);
+
+        return responseData;
     }
 
 }
