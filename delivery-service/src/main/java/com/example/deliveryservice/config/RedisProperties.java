@@ -1,4 +1,4 @@
-package com.example.userservice.config;
+package com.example.deliveryservice.config;
 
 import lombok.Getter;
 import lombok.Setter;
