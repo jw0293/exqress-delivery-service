@@ -1,6 +1,6 @@
 package com.example.deliveryservice.dto;
 
-import com.example.deliveryservice.vo.ResponseItem;
+import com.example.deliveryservice.vo.response.ResponseItem;
 import lombok.Data;
 
 import java.util.Date;

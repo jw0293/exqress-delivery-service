@@ -1,2 +1,7 @@
-package com.example.deliveryservice.dto;public class DeliveryLoginDto {
+package com.example.deliveryservice.dto;
+
+import lombok.Data;
+
+@Data
+public class DeliveryLoginDto {
 }

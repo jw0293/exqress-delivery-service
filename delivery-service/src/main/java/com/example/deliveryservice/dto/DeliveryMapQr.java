@@ -1,2 +1,10 @@
-package com.example.deliveryservice.vo.response;public class ResponseMapQR {
+package com.example.deliveryservice.dto;
+
+import lombok.Data;
+
+@Data
+public class DeliveryMapQr {
+
+    private String deliveryId;
+    private String qrId;
 }
