@@ -47,7 +47,7 @@ public class DeliveryController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
-    @PostMapping("/deliverys")
+    @PostMapping("/signUp")
     public ResponseEntity<ResponseData> createUser(@RequestBody RequestDelivery delivery){
         String email = delivery.getEmail();
         if(deliveryService.isDuplicatedUser(email)) {
@@ -85,7 +85,7 @@ public class DeliveryController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
-    @PostMapping("/logouts")
+    @PostMapping("/signOut")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String accessToken = tokenService.getAccessToken(request, response);
         return deliveryService.logout(accessToken);
@@ -98,7 +98,7 @@ public class DeliveryController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
-    @PostMapping("/login")
+    @PostMapping("/signIn")
     public ResponseEntity<?> login(@RequestBody RequestLogin login, HttpServletRequest request, HttpServletResponse response){
         ResponseEntity<ResponseData> responseData = deliveryService.login(request, response, login);
 
