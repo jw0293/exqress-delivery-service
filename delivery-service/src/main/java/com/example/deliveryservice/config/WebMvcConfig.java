@@ -31,7 +31,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtTokenInterceptor())
                 .excludePathPatterns(URI + "/swagger-resources/**", URI + "/swagger-ui/**", URI + "/v3/api-docs", URI + "/api-docs/**")
                 .excludePathPatterns("/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs", "/api-docs/**")
-                .excludePathPatterns("/deliverys", "/login", "/error/**", "/reissue")
+                .excludePathPatterns("/signUp", "/signIn", "/error/**", "/reissue")
                 .addPathPatterns("/**");
     }
 
