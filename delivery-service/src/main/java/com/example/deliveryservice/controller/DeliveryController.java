@@ -86,11 +86,9 @@ public class DeliveryController {
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
     @PostMapping("/logouts")
-    public ResponseEntity<?> logout(@RequestBody RequestToken logoutToken){
-        log.info("Logout accessToken : {}", logoutToken.getAccessToken());
-        log.info("Logout refreshToken : {}", logoutToken.getRefreshToken());
-
-        return tokenService.logout(logoutToken);
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String accessToken = tokenService.getAccessToken(request, response);
+        return deliveryService.logout(accessToken);
     }
 
     @Operation(summary = "배송 기사 로그인", description = "배송 기사가 로그인을 시도합니다.")

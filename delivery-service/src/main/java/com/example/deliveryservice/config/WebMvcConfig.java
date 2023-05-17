@@ -6,6 +6,7 @@ import com.example.deliveryservice.utils.TokenUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -22,9 +23,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final TokenUtils tokenUtils;
     private final CookieUtils cookieUtils;
 
+    @Value("${spring.url}")
+    private static String URI;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtTokenInterceptor())
+                .excludePathPatterns(URI + "/swagger-resources/**", URI + "/swagger-ui/**", URI + "/v3/api-docs", URI + "/api-docs/**")
                 .excludePathPatterns("/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs", "/api-docs/**")
                 .excludePathPatterns("/deliverys", "/login", "/error/**", "/reissue")
                 .addPathPatterns("/**");

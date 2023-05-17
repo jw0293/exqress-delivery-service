@@ -13,7 +13,9 @@ import com.example.deliveryservice.utils.TokenUtils;
 import com.example.deliveryservice.vo.request.RequestLogin;
 import com.example.deliveryservice.vo.request.RequestQRcode;
 import com.example.deliveryservice.dto.DeliveryMapQr;
+import com.example.deliveryservice.vo.request.RequestToken;
 import com.example.deliveryservice.vo.response.ResponseData;
+import com.example.deliveryservice.vo.response.ResponseDelivery;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -115,6 +117,35 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .set("RT:" + entity.getDeliveryId(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
         return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "로그인 성공", "", tokenInfo.getAccessToken()), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ResponseData> logout(String accessToken) {
+        // 1. Access Token 검증
+        if (!tokenUtils.isValidToken(accessToken)) {
+            return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "잘못된 요청입니다.", "", ""), HttpStatus.BAD_REQUEST);
+        }
+        log.info("유효한 토큰 확인");
+
+        // 2. Access Token 에서 User email 을 가져옵니다.
+        ResponseDelivery authentication = tokenUtils.getAuthentication(accessToken);
+
+        log.info("AuthUser Name : {}", authentication.getName());
+        log.info("AuthUser Email : {}", authentication.getEmail());
+        log.info("AuthUser UserId : {}", authentication.getDeliveryId());
+
+        // 3. Redis 에서 해당 User ID로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
+        if (redisTemplate.opsForValue().get("RT:" + authentication.getDeliveryId()) != null) {
+            // Refresh Token 삭제
+            redisTemplate.delete("RT:" + authentication.getDeliveryId());
+        }
+
+        // 4. 해당 Access Token 유효시간 가지고 와서 BlackList 로 저장하기
+        Long expiration = tokenUtils.getExpiration(accessToken);
+        redisTemplate.opsForValue()
+                .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+
+        return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "로그아웃 되었습니다.", "", ""), HttpStatus.OK);
     }
 
     @Override

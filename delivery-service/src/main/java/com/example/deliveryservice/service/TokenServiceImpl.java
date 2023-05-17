@@ -9,6 +9,7 @@ import com.example.deliveryservice.utils.TokenUtils;
 import com.example.deliveryservice.vo.request.RequestToken;
 import com.example.deliveryservice.vo.response.ResponseData;
 import com.example.deliveryservice.vo.response.ResponseDelivery;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
@@ -97,31 +98,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public ResponseEntity<ResponseData> logout(RequestToken logout) {
-        // 1. Access Token 검증
-        if (!tokenUtils.isValidToken(logout.getAccessToken())) {
-            return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "잘못된 요청입니다.", "", ""), HttpStatus.BAD_REQUEST);
-        }
-        log.info("유효한 토큰 확인");
-
-        // 2. Access Token 에서 User email 을 가져옵니다.
-        ResponseDelivery authentication = tokenUtils.getAuthentication(logout.getAccessToken());
-
-        log.info("AuthUser Name : {}", authentication.getName());
-        log.info("AuthUser Email : {}", authentication.getEmail());
-        log.info("AuthUser UserId : {}", authentication.getDeliveryId());
-
-        // 3. Redis 에서 해당 User ID로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
-        if (redisTemplate.opsForValue().get("RT:" + authentication.getDeliveryId()) != null) {
-            // Refresh Token 삭제
-            redisTemplate.delete("RT:" + authentication.getDeliveryId());
-        }
-
-        // 4. 해당 Access Token 유효시간 가지고 와서 BlackList 로 저장하기
-        Long expiration = tokenUtils.getExpiration(logout.getAccessToken());
-        redisTemplate.opsForValue()
-                .set(logout.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
-
-        return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "로그아웃 되었습니다.", "", ""), HttpStatus.OK);
+    public String getAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        return request.getHeader(AuthConstants.AUTHORIZATION_HEADER).substring(AuthConstants.TOKEN_TYPE.length());
     }
 }
