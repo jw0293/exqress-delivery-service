@@ -110,33 +110,7 @@ public class TokenUtils {
         return false;
     }
 
-    public TokenInfo reissue(String token){
-        ResponseDelivery authentication = getAuthentication(token);
-        // 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
-        String refreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getDeliveryId());
-
-        // (추가) 로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리
-        if(ObjectUtils.isEmpty(refreshToken)) {
-            //return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "잘못된 요청입니다.", "", ""), HttpStatus.BAD_REQUEST);
-            return null;
-        }
-        if(!refreshToken.equals(token)) {
-            //return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "Refresh 토큰이 일치하지 않습니다.", "", ""), HttpStatus.BAD_REQUEST);
-            return null;
-        }
-
-        // 4. 새로운 토큰 생성
-        TokenInfo newTokenInfo = generateToken(authentication.getDeliveryId());
-        log.info("New Token Success !");
-
-        // 5. RefreshToken Redis 업데이트
-        redisTemplate.opsForValue()
-                .set("RT:" + authentication.getDeliveryId(), newTokenInfo.getRefreshToken(), newTokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
-
-        return newTokenInfo;
-    }
-
-    public ResponseDelivery getAuthentication(String token){
+    public ResponseDelivery getAuthentication(String token) {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -145,14 +119,6 @@ public class TokenUtils {
                 .getBody().getSubject());
 
         return mapper.map(deliveryEntity, ResponseDelivery.class);
-    }
-
-    public Long getExpiration(String token){
-        // token 남은 유효 시간
-        Date expiration = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration();
-        // 현재 시간
-        Long now = System.currentTimeMillis();
-        return (expiration.getTime() - now);
     }
 
 }

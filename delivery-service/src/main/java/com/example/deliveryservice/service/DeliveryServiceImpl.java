@@ -48,6 +48,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final Environment env;
     private final TokenUtils tokenUtils;
     private final CookieUtils cookieUtils;
+    private final TokenServiceImpl tokenService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final QRcodeRepository qRcodeRepository;
     private final DeliveryRepository deliveryRepository;
@@ -141,7 +142,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         // 4. 해당 Access Token 유효시간 가지고 와서 BlackList 로 저장하기
-        Long expiration = tokenUtils.getExpiration(accessToken);
+        Long expiration = tokenService.getExpiration(accessToken);
+        log.info(accessToken);
         redisTemplate.opsForValue()
                 .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
 

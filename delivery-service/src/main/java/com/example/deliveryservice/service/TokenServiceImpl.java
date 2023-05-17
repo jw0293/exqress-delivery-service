@@ -2,16 +2,13 @@ package com.example.deliveryservice.service;
 
 import com.example.deliveryservice.StatusEnum;
 import com.example.deliveryservice.constants.AuthConstants;
-import com.example.deliveryservice.dto.DeliveryDto;
 import com.example.deliveryservice.dto.TokenInfo;
 import com.example.deliveryservice.utils.CookieUtils;
 import com.example.deliveryservice.utils.TokenUtils;
-import com.example.deliveryservice.vo.request.RequestToken;
 import com.example.deliveryservice.vo.response.ResponseData;
 import com.example.deliveryservice.vo.response.ResponseDelivery;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -33,24 +31,15 @@ import java.util.concurrent.TimeUnit;
 public class TokenServiceImpl implements TokenService {
 
     private final Environment env;
+    private String secretKey;
     private final TokenUtils tokenUtils;
     private final CookieUtils cookieUtils;
     private final RedisTemplate redisTemplate;
 
-    @Override
-    public String createToken(DeliveryDto deliveryDto){
-
-        log.info("Token Expiration_time : {}", env.getProperty("token.expiration_time"));
-        log.info("Token Secret : {}", env.getProperty("token.secret"));
-
-        return Jwts.builder()
-                .setSubject(deliveryDto.getDeliveryId())
-                .setExpiration(
-                        new Date(System.currentTimeMillis() +
-                                Long.parseLong(env.getProperty("token.expiration_time")))
-                )
-                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
-                .compact();
+    @PostConstruct
+    protected void init(){
+        secretKey = env.getProperty("token.secret");
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
     @Override
@@ -75,7 +64,7 @@ public class TokenServiceImpl implements TokenService {
         String refreshTokenFromRedis = (String) redisTemplate.opsForValue().get("RT:" + authenticationUser.getDeliveryId());
         // (추가) 로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리
         if(ObjectUtils.isEmpty(refreshTokenFromRedis)) {
-            return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "잘못된 요청입니다.", "", ""), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "이미 로그아웃 된 토큰입니다.", "", ""), HttpStatus.BAD_REQUEST);
         }
         if(!refreshTokenFromRedis.equals(refreshToken)) {
             return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "Refresh 토큰이 일치하지 않습니다.", "", ""), HttpStatus.BAD_REQUEST);
@@ -100,5 +89,14 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public String getAccessToken(HttpServletRequest request, HttpServletResponse response) {
         return request.getHeader(AuthConstants.AUTHORIZATION_HEADER).substring(AuthConstants.TOKEN_TYPE.length());
+    }
+
+    @Override
+    public Long getExpiration(String token){
+        // token 남은 유효 시간
+        Date expiration = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration();
+        // 현재 시간
+        Long now = System.currentTimeMillis();
+        return (expiration.getTime() - now);
     }
 }

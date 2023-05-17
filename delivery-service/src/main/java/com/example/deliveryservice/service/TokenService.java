@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface TokenService {
 
-    String createToken(DeliveryDto deliveryDto);
+    Long getExpiration(String token);
     String getAccessToken(HttpServletRequest request, HttpServletResponse response);
     ResponseEntity<ResponseData> reissue(HttpServletRequest request, HttpServletResponse response);
 }
