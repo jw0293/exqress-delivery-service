@@ -11,7 +11,7 @@ public class DeliveryDto {
 
     private String email;
     private String name;
-    private String pwd;
+    private String password;
     private String deliveryId;
     private Date createdAt;
     private String phoneNumber;

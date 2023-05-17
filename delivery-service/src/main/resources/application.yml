@@ -4,19 +4,22 @@ server:
 spring:
   application:
     name: capstone
+  redis:
+    port: 6379
+    host: 127.0.0.1
 #  profiles:
 #    active: local
-#  h2:
-#    console:
-#      enabled: true
-#      settings:
-#        web-allow-others: true
-#      path: /h2-console
-#  datasource:
-#    url: jdbc:h2:mem:testdb
-#    username: sa
-#    password:
-#    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
   jpa:
     show-sql: true
     hibernate:
@@ -55,3 +58,8 @@ management:
     web:
       exposure:
         include: "*"
+
+token:
+  access_expiration_time: 864000
+  refresh_expiration_time: 8640000
+  secret: exqress-token

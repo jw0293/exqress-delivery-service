@@ -12,7 +12,9 @@ import com.example.deliveryservice.vo.request.RequestToken;
 import com.example.deliveryservice.vo.response.ResponseData;
 import com.example.deliveryservice.vo.response.ResponseDelivery;
 import com.example.deliveryservice.vo.response.ResponseError;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -63,9 +65,10 @@ public class DeliveryController {
         return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "회원가입 성공", responseDelivery, ""), HttpStatus.OK);
     }
 
-    @Operation(summary = "Token 재발급", description = "배송 기사가 회원가입을 시도합니다.")
+    @Operation(summary = "Token 재발급", description = "토큰 재발급을 시도합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "200", description = " 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "401", description = "인가되지 않은 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
@@ -74,6 +77,14 @@ public class DeliveryController {
         return tokenService.reissue(request, response);
     }
 
+
+    @Operation(summary = "배송 기사 로그아웃", description = "배송 기사가 로그아웃을 시도합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "401", description = "인가되지 않은 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
+    })
     @PostMapping("/logouts")
     public ResponseEntity<?> logout(@RequestBody RequestToken logoutToken){
         log.info("Logout accessToken : {}", logoutToken.getAccessToken());
@@ -82,6 +93,13 @@ public class DeliveryController {
         return tokenService.logout(logoutToken);
     }
 
+    @Operation(summary = "배송 기사 로그인", description = "배송 기사가 로그인을 시도합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ResponseError.class))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
+    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody RequestLogin login, HttpServletRequest request, HttpServletResponse response){
         ResponseEntity<ResponseData> responseData = deliveryService.login(request, response, login);

@@ -18,10 +18,4 @@ public class DeliveryServiceApplication {
 
 		SpringApplication.run(DeliveryServiceApplication.class, args);
 	}
-
-
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
 }

@@ -2,12 +2,17 @@ package com.example.deliveryservice.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import org.apache.catalina.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,44 +24,17 @@ import java.util.List;
 @Configuration
 public class SwaggerConfig{
 
+    @Bean
+    public OpenAPI openAPI(){
+        SecurityScheme securityScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
+                .in(SecurityScheme.In.HEADER).name("Authorization");
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
 
-//    @Bean
-//    public Docket api() {
-//        return new Docket(DocumentationType.OAS_30)
-//                //.securityContexts(Arrays.asList(securityContext())) // 추가
-//                //.securitySchemes(Arrays.asList(apiKey())) // 추가
-//                .useDefaultResponseMessages(false)
-//                .select()
-//                .apis(RequestHandlerSelectors.basePackage("com.example.deliveryservice.controller"))
-//                .paths(PathSelectors.any())
-//                .build()
-//                .apiInfo(apiInfo());
-//    }
+        return new OpenAPI()
+                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
+                .security(Arrays.asList(securityRequirement));
 
-//    private SecurityContext securityContext() {
-//        return SecurityContext.builder()
-//                .securityReferences(defaultAuth())
-//                .build();
-//    }
-//
-//    private List<SecurityReference> defaultAuth() {
-//        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-//        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-//        authorizationScopes[0] = authorizationScope;
-//        return Arrays.asList(new SecurityReference("Authorization", (springfox.documentation.service.AuthorizationScope[]) authorizationScopes));
-//    }
-//
-//    // 추가
-//    private ApiKey apiKey() {
-//        return new ApiKey("Authorization", "Authorization", "header");
-//    }
-//
+    }
 
-//    private ApiInfo apiInfo() {
-//        return new ApiInfoBuilder()
-//                .title("Delivery-Service Backend API")
-//                .description("Backend API 문서")
-//                .version("1.0")
-//                .build();
-//    }
 }

@@ -122,7 +122,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         userDto.setDeliveryId(UUID.randomUUID().toString());
 
         DeliveryEntity userEntity = mapper.map(userDto, DeliveryEntity.class);
-        userEntity.setEncryptedPwd(bCryptPasswordEncoder.encode(userDto.getPwd()));
+        userEntity.setEncryptedPwd(bCryptPasswordEncoder.encode(userDto.getPassword()));
 
         deliveryRepository.save(userEntity);
 

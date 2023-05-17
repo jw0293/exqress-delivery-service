@@ -23,7 +23,7 @@ public class RequestDelivery {
     @NotNull(message = "Password cannot be null")
     @Size(min = 8, message = "Password not be less than two characters")
     @Schema(description = "회원가입 비밀번호", nullable = false, example = "test1234")
-    private String pwd;
+    private String password;
 
     @NotNull(message = "Phone-Number cannot be null")
     @Schema(description = "배송기사 전화번호", nullable = false, example = "010-4123-2691")

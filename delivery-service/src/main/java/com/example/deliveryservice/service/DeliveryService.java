@@ -20,5 +20,5 @@ public interface DeliveryService extends UserDetailsService {
     DeliveryMapQr mappingQRcode(String deliveryId, RequestQRcode qRcode);
     ResponseEntity<ResponseData> login(HttpServletRequest request, HttpServletResponse response, RequestLogin login);
 
-    ResponseEntity updateParcelCompleteState(RequestQRcode qRcode);
+    ResponseEntity<ResponseData> updateParcelCompleteState(RequestQRcode qRcode);
 }

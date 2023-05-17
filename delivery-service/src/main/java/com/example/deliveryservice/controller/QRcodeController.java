@@ -49,6 +49,7 @@ public class QRcodeController {
     @Operation(summary = "배송 물품 조회", description = "택배 기사에게 할당된 배송 물품이 조회됩니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ResponseItem.class))),
+            @ApiResponse(responseCode = "401", description = "인가되지 않은 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
@@ -64,6 +65,7 @@ public class QRcodeController {
     @Operation(summary = "배송물품 택배 할당", description = "배송물품 택배가 할당되어 출발 상태로 전환됩니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "할당 및 출발 상태 전환 성2", content = @Content(schema = @Schema(implementation = ResponseItem.class))),
+            @ApiResponse(responseCode = "401", description = "인가되지 않은 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
@@ -83,6 +85,13 @@ public class QRcodeController {
         return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "QR코드 저장 성공", deliveryMapQr, ""), HttpStatus.OK);
     }
 
+    @Operation(summary = "배송 완료", description = "배송 기사가 배송을 완료하였습니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "완료 처리 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "401", description = "인가되지 않은 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
+            @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
+    })
     @PostMapping("/qr/complete")
     public ResponseEntity<ResponseData> setQRcodeAndCompleteStatus(@RequestBody RequestQRcode qRcode){
         /**

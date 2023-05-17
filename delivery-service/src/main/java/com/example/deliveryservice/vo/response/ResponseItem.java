@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class ResponseItem {
+    @Schema(description = "배송기사 ID", nullable = false, example = "1gfoeh9214")
     private String deliveryId;
 
     @Schema(description = "운송장 번호", nullable = false, example = "012584042")

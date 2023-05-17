@@ -22,10 +22,10 @@ public class ResponseQr {
     @Schema(description = "수령인 전화번호", nullable = false, example = "010-4123-2691")
     private String receiverPhoneNumber;
 
-    @Schema(description = "배송 완료 여부", nullable = false, example = "True/False")
+    @Schema(description = "배송 완료 여부", nullable = false, example = "false")
     private Boolean isComplete;
 
-    @Schema(description = "수령인 주소", nullable = false, example = "서울 중구 장충로")
+    @Schema(description = "수령인 주소", nullable = false, example = "{ \"city\" : \"서울\", \"street\" : \"중구로\", \"zipcode\" : \"48321\"}")
     private Address address;
 
 }

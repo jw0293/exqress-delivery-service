@@ -2,7 +2,6 @@ package com.example.deliveryservice.security;
 
 import com.example.deliveryservice.StatusEnum;
 import com.example.deliveryservice.constants.AuthConstants;
-import com.example.deliveryservice.dto.TokenInfo;
 import com.example.deliveryservice.utils.CookieUtils;
 import com.example.deliveryservice.utils.TokenUtils;
 import com.example.deliveryservice.vo.response.ResponseData;
@@ -13,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Slf4j
