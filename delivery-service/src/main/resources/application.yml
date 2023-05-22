@@ -1,6 +1,6 @@
 server:
   port: 4001
-  url: http://k8s-default-backdeli-ecf39846be-744275535.ap-northeast-2.elb.amazonaws.com/
+  url: http://k8s-default-backdeli-ecf39846be-744275535.ap-northeast-2.elb.amazonaws.com
 
 spring:
   application:
@@ -12,7 +12,7 @@ spring:
         max-idle: 5 # pool의 'idle' 커넥션 최대수
         min-idle: 2
     port: 6379
-    host: a403acea7ffb044a3a05637eede69186-65650957.ap-northeast-2.elb.amazonaws.com/
+    host: a403acea7ffb044a3a05637eede69186-65650957.ap-northeast-2.elb.amazonaws.com
     #host: 172.19.0.2
 #  profiles:
 #    active: local
