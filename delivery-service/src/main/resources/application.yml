@@ -7,7 +7,8 @@ spring:
     name: capstone
   redis:
     port: 6379
-    host: http://my-redis.redis-ns.svc.cluster.local
+    ##host: http://my-redis.redis-ns.svc.cluster.local
+    host: 172.19.0.2
 #  profiles:
 #    active: local
   h2:
