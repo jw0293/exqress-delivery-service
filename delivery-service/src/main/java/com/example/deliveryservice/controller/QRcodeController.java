@@ -1,16 +1,15 @@
 package com.example.deliveryservice.controller;
 
 import com.example.deliveryservice.StatusEnum;
-import com.example.deliveryservice.dto.DeliveryMapQr;
-import com.example.deliveryservice.dto.QRcodeDto;
+import com.example.deliveryservice.dto.DeliveryQRDto;
+//import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
+import com.example.deliveryservice.messagequeue.KafkaProducer;
 import com.example.deliveryservice.service.DeliveryServiceImpl;
 import com.example.deliveryservice.service.QRcodeServiceImpl;
 import com.example.deliveryservice.vo.Result;
 import com.example.deliveryservice.vo.request.RequestQRcode;
 import com.example.deliveryservice.vo.response.*;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +34,7 @@ import java.util.List;
 @RequestMapping("/")
 public class QRcodeController {
 
+    private final KafkaProducer kafkaProducer;
     private final QRcodeServiceImpl qRcodeService;
     private final DeliveryServiceImpl deliveryService;
     private ModelMapper mapper;
@@ -75,14 +74,17 @@ public class QRcodeController {
         String deliveryId = deliveryService.getDeliveryIdThroughRequest(request);
         log.info("DeliveryId : {}", deliveryId);
         // 기사ID와 QRcode정보와 ID를 Mapping해준다
-        DeliveryMapQr deliveryMapQr = deliveryService.mappingQRcode(deliveryId, qRcode);
+        DeliveryQRDto deliveryQRDto = deliveryService.mappingQRcode(deliveryId, qRcode);
 
+        //DeliveryInfoWithQRId deliveryInfoThroughId = deliveryService.getDeliveryInfoThroughId(deliveryId);
+        //deliveryInfoThroughId.setQrId(qRcode.getQrId());
         /**
          * 배송기사가 QR코드를 스캔함
          * User Service에게 kafka를 통해 데이터(배송 기사 ID, QR_ID)를 전송하여 배송 시작으로 업데이트 요청
          **/
+        //kafkaProducer.sendUserServiceQRid("qr_topic", deliveryInfoThroughId);
 
-        return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "QR코드 저장 성공", deliveryMapQr, ""), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "QR코드 저장 성공", deliveryQRDto, ""), HttpStatus.OK);
     }
 
     @Operation(summary = "배송 완료", description = "배송 기사가 배송을 완료하였습니다.")
