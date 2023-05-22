@@ -4,6 +4,7 @@ import com.example.deliveryservice.StatusEnum;
 import com.example.deliveryservice.constants.AuthConstants;
 import com.example.deliveryservice.dto.DeliveryDto;
 import com.example.deliveryservice.dto.TokenInfo;
+//import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.entity.DeliveryEntity;
 import com.example.deliveryservice.entity.QRcode;
 import com.example.deliveryservice.repository.DeliveryRepository;
@@ -12,8 +13,7 @@ import com.example.deliveryservice.utils.CookieUtils;
 import com.example.deliveryservice.utils.TokenUtils;
 import com.example.deliveryservice.vo.request.RequestLogin;
 import com.example.deliveryservice.vo.request.RequestQRcode;
-import com.example.deliveryservice.dto.DeliveryMapQr;
-import com.example.deliveryservice.vo.request.RequestToken;
+import com.example.deliveryservice.dto.DeliveryQRDto;
 import com.example.deliveryservice.vo.response.ResponseData;
 import com.example.deliveryservice.vo.response.ResponseDelivery;
 import jakarta.annotation.PostConstruct;
@@ -176,18 +176,20 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public DeliveryMapQr mappingQRcode(String deliveryId, RequestQRcode qRcode) {
+    public DeliveryQRDto mappingQRcode(String deliveryId, RequestQRcode qRcode) {
         DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryId(deliveryId);
         QRcode qrCodeEntity = mapper.map(qRcode, QRcode.class);
         qrCodeEntity.setDeliveryEntity(deliveryEntity);
-        qRcodeRepository.save(qrCodeEntity);
 
         deliveryEntity.getQRcodeList().add(qrCodeEntity);
 
         // save를 해야 변경감지로 저장이 되나?
-        DeliveryMapQr deliveryMapQr = new DeliveryMapQr();
+        DeliveryQRDto deliveryMapQr = new DeliveryQRDto();
         deliveryMapQr.setDeliveryId(deliveryEntity.getDeliveryId());
         deliveryMapQr.setQrId(qRcode.getQrId());
+
+        deliveryRepository.save(deliveryEntity);
+        qRcodeRepository.save(qrCodeEntity);
 
         return deliveryMapQr;
     }
@@ -222,4 +224,16 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         return new ResponseEntity<ResponseData>(new ResponseData(StatusEnum.OK.getStatusCode(), "배송 완료로 상태 업데이트 완료", "", ""), HttpStatus.OK);
     }
+//
+//    @Override
+//    public DeliveryInfoWithQRId getDeliveryInfoThroughId(String deliveryId) {
+//        DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryId(deliveryId);
+//        DeliveryInfoWithQRId deliveryInfoWithQRId = new DeliveryInfoWithQRId();
+//
+//        deliveryInfoWithQRId.setState("배송 시작");
+//        deliveryInfoWithQRId.setDeliveryName(deliveryEntity.getName());
+//        deliveryInfoWithQRId.setDeliveryPhoneNumber(deliveryEntity.getPhoneNumber());
+//
+//        return deliveryInfoWithQRId;
+//    }
 }

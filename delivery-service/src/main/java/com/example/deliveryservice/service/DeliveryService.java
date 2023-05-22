@@ -1,7 +1,8 @@
 package com.example.deliveryservice.service;
 
 import com.example.deliveryservice.dto.DeliveryDto;
-import com.example.deliveryservice.dto.DeliveryMapQr;
+import com.example.deliveryservice.dto.DeliveryQRDto;
+//import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.vo.request.RequestLogin;
 import com.example.deliveryservice.vo.request.RequestQRcode;
 import com.example.deliveryservice.vo.response.ResponseData;
@@ -17,9 +18,11 @@ public interface DeliveryService extends UserDetailsService {
     boolean isDuplicatedUser(String email);
     String getDeliveryIdThroughRequest(HttpServletRequest request);
 
-    DeliveryMapQr mappingQRcode(String deliveryId, RequestQRcode qRcode);
+    DeliveryQRDto mappingQRcode(String deliveryId, RequestQRcode qRcode);
     ResponseEntity<ResponseData> logout(String accessToken);
     ResponseEntity<ResponseData> login(HttpServletRequest request, HttpServletResponse response, RequestLogin login);
 
     ResponseEntity<ResponseData> updateParcelCompleteState(RequestQRcode qRcode);
+
+    //DeliveryInfoWithQRId getDeliveryInfoThroughId(String deliveryId);
 }

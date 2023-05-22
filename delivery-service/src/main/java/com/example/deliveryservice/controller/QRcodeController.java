@@ -3,7 +3,7 @@ package com.example.deliveryservice.controller;
 import com.example.deliveryservice.StatusEnum;
 import com.example.deliveryservice.dto.DeliveryQRDto;
 //import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
-import com.example.deliveryservice.messagequeue.KafkaProducer;
+//import com.example.deliveryservice.messagequeue.KafkaProducer;
 import com.example.deliveryservice.service.DeliveryServiceImpl;
 import com.example.deliveryservice.service.QRcodeServiceImpl;
 import com.example.deliveryservice.vo.Result;
@@ -34,7 +34,7 @@ import java.util.List;
 @RequestMapping("/")
 public class QRcodeController {
 
-    private final KafkaProducer kafkaProducer;
+    //private final KafkaProducer kafkaProducer;
     private final QRcodeServiceImpl qRcodeService;
     private final DeliveryServiceImpl deliveryService;
     private ModelMapper mapper;
