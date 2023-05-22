@@ -1,6 +1,6 @@
 server:
   port: 4001
-  url: http://k8s-default-backdeli-ecf39846be-65120739.ap-northeast-2.elb.amazonaws.com/
+  url: http://http://k8s-default-backdeli-ecf39846be-744275535.ap-northeast-2.elb.amazonaws.com/
 
 spring:
   application:
