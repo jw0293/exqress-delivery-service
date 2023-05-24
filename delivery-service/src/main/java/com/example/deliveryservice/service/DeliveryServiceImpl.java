@@ -5,6 +5,7 @@ import com.example.deliveryservice.constants.AuthConstants;
 import com.example.deliveryservice.dto.DeliveryDto;
 import com.example.deliveryservice.dto.TokenInfo;
 //import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
+import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.entity.DeliveryEntity;
 import com.example.deliveryservice.entity.QRcode;
 import com.example.deliveryservice.repository.DeliveryRepository;
@@ -224,16 +225,16 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         return new ResponseEntity<ResponseData>(new ResponseData(StatusEnum.OK.getStatusCode(), "배송 완료로 상태 업데이트 완료", "", ""), HttpStatus.OK);
     }
-//
-//    @Override
-//    public DeliveryInfoWithQRId getDeliveryInfoThroughId(String deliveryId) {
-//        DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryId(deliveryId);
-//        DeliveryInfoWithQRId deliveryInfoWithQRId = new DeliveryInfoWithQRId();
-//
-//        deliveryInfoWithQRId.setState("배송 시작");
-//        deliveryInfoWithQRId.setDeliveryName(deliveryEntity.getName());
-//        deliveryInfoWithQRId.setDeliveryPhoneNumber(deliveryEntity.getPhoneNumber());
-//
-//        return deliveryInfoWithQRId;
-//    }
+
+    @Override
+    public DeliveryInfoWithQRId getDeliveryInfoThroughId(String deliveryId) {
+        DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryId(deliveryId);
+        DeliveryInfoWithQRId deliveryInfoWithQRId = new DeliveryInfoWithQRId();
+
+        deliveryInfoWithQRId.setState("배송 시작");
+        deliveryInfoWithQRId.setDeliveryName(deliveryEntity.getName());
+        deliveryInfoWithQRId.setDeliveryPhoneNumber(deliveryEntity.getPhoneNumber());
+
+        return deliveryInfoWithQRId;
+    }
 }

@@ -2,8 +2,8 @@ package com.example.deliveryservice.controller;
 
 import com.example.deliveryservice.StatusEnum;
 import com.example.deliveryservice.dto.DeliveryQRDto;
-//import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
-//import com.example.deliveryservice.messagequeue.KafkaProducer;
+import com.example.deliveryservice.messagequeue.KafkaProducer;
+import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.service.DeliveryServiceImpl;
 import com.example.deliveryservice.service.QRcodeServiceImpl;
 import com.example.deliveryservice.vo.Result;
@@ -34,7 +34,7 @@ import java.util.List;
 @RequestMapping("/")
 public class QRcodeController {
 
-    //private final KafkaProducer kafkaProducer;
+    private final KafkaProducer kafkaProducer;
     private final QRcodeServiceImpl qRcodeService;
     private final DeliveryServiceImpl deliveryService;
     private ModelMapper mapper;
@@ -75,14 +75,15 @@ public class QRcodeController {
         log.info("DeliveryId : {}", deliveryId);
         // 기사ID와 QRcode정보와 ID를 Mapping해준다
         DeliveryQRDto deliveryQRDto = deliveryService.mappingQRcode(deliveryId, qRcode);
-
-        //DeliveryInfoWithQRId deliveryInfoThroughId = deliveryService.getDeliveryInfoThroughId(deliveryId);
-        //deliveryInfoThroughId.setQrId(qRcode.getQrId());
+        
+        DeliveryInfoWithQRId deliveryInfoThroughId = deliveryService.getDeliveryInfoThroughId(deliveryId);
+        deliveryInfoThroughId.setQrId(qRcode.getQrId());
         /**
          * 배송기사가 QR코드를 스캔함
          * User Service에게 kafka를 통해 데이터(배송 기사 ID, QR_ID)를 전송하여 배송 시작으로 업데이트 요청
          **/
-        //kafkaProducer.sendUserServiceQRid("qr_topic", deliveryInfoThroughId);
+        log.info("QR Info -> id : {}", deliveryInfoThroughId.getQrId());
+        kafkaProducer.sendUserServiceQRid("qr_topic", deliveryInfoThroughId);
 
         return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "QR코드 저장 성공", deliveryQRDto, ""), HttpStatus.OK);
     }
