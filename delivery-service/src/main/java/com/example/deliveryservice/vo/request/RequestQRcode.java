@@ -20,5 +20,5 @@ public class RequestQRcode {
     @Schema(description = "수령인 전화번호", nullable = false, example = "010-4123-2691")
     private String receiverPhoneNumber;
     @Schema(description = "배송 완료 여부", nullable = false, example = "false")
-    private boolean isComplete;
+    private String isComplete;
 }

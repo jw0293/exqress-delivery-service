@@ -30,7 +30,7 @@ public class QRcode {
 
     @Column(nullable = false)
     @ColumnDefault("false")
-    private boolean isComplete;
+    private String isComplete;
 
     @Embedded
     private Address address;

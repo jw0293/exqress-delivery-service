@@ -4,6 +4,7 @@ import com.example.deliveryservice.dto.DeliveryDto;
 import com.example.deliveryservice.dto.DeliveryQRDto;
 //import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
+import com.example.deliveryservice.vo.request.RequestDeliveryComplete;
 import com.example.deliveryservice.vo.request.RequestLogin;
 import com.example.deliveryservice.vo.request.RequestQRcode;
 import com.example.deliveryservice.vo.response.ResponseData;
@@ -23,7 +24,7 @@ public interface DeliveryService extends UserDetailsService {
     ResponseEntity<ResponseData> logout(String accessToken);
     ResponseEntity<ResponseData> login(HttpServletRequest request, HttpServletResponse response, RequestLogin login);
 
-    ResponseEntity<ResponseData> updateParcelCompleteState(RequestQRcode qRcode);
+    ResponseEntity<ResponseData> updateParcelCompleteState(RequestDeliveryComplete requestDeliveryComplete);
 
-    DeliveryInfoWithQRId getDeliveryInfoThroughId(String deliveryId);
+    DeliveryInfoWithQRId getDeliveryInfoThroughId(String deliveryId, String state);
 }

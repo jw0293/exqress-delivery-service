@@ -7,6 +7,7 @@ import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.service.DeliveryServiceImpl;
 import com.example.deliveryservice.service.QRcodeServiceImpl;
 import com.example.deliveryservice.vo.Result;
+import com.example.deliveryservice.vo.request.RequestDeliveryComplete;
 import com.example.deliveryservice.vo.request.RequestQRcode;
 import com.example.deliveryservice.vo.response.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -76,14 +78,14 @@ public class QRcodeController {
         // 기사ID와 QRcode정보와 ID를 Mapping해준다
         DeliveryQRDto deliveryQRDto = deliveryService.mappingQRcode(deliveryId, qRcode);
         
-        DeliveryInfoWithQRId deliveryInfoThroughId = deliveryService.getDeliveryInfoThroughId(deliveryId);
+        DeliveryInfoWithQRId deliveryInfoThroughId = deliveryService.getDeliveryInfoThroughId(deliveryId, "배송 시작");
         deliveryInfoThroughId.setQrId(qRcode.getQrId());
         /**
          * 배송기사가 QR코드를 스캔함
          * User Service에게 kafka를 통해 데이터(배송 기사 ID, QR_ID)를 전송하여 배송 시작으로 업데이트 요청
          **/
         log.info("QR Info -> id : {}", deliveryInfoThroughId.getQrId());
-        kafkaProducer.sendUserServiceQRid("qr_topic", deliveryInfoThroughId);
+        kafkaProducer.sendDeliveryStart("delivery_start", deliveryInfoThroughId);
 
         return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "QR코드 저장 성공", deliveryQRDto, ""), HttpStatus.OK);
     }
@@ -96,11 +98,16 @@ public class QRcodeController {
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
     @PostMapping("/qr/complete")
-    public ResponseEntity<ResponseData> setQRcodeAndCompleteStatus(@RequestBody RequestQRcode qRcode){
+    public ResponseEntity<ResponseData> setQRcodeAndCompleteStatus(HttpServletRequest request, @RequestBody RequestDeliveryComplete requestDeliveryComplete){
         /**
          * 배송 기사가 버튼을 누름으로써 배송 완료 처리 변경
          * User Service에게 Kafka를 통해 데이터(QR_ID, 배송 완료)를 전송하여 배송 완료 단계로 업데이트 요청
          */
-        return deliveryService.updateParcelCompleteState(qRcode);
+        String deliveryId = deliveryService.getDeliveryIdThroughRequest(request);
+        DeliveryInfoWithQRId deliveryInfoThroughId = deliveryService.getDeliveryInfoThroughId(deliveryId, "배송 완료");
+        deliveryInfoThroughId.setQrId(requestDeliveryComplete.getQrId());
+        kafkaProducer.sendDeliveryComplete("delivery_complete", deliveryInfoThroughId);
+
+        return deliveryService.updateParcelCompleteState(requestDeliveryComplete);
     }
 }

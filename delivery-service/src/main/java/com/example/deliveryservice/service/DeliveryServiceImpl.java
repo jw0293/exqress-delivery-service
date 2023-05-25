@@ -12,6 +12,7 @@ import com.example.deliveryservice.repository.DeliveryRepository;
 import com.example.deliveryservice.repository.QRcodeRepository;
 import com.example.deliveryservice.utils.CookieUtils;
 import com.example.deliveryservice.utils.TokenUtils;
+import com.example.deliveryservice.vo.request.RequestDeliveryComplete;
 import com.example.deliveryservice.vo.request.RequestLogin;
 import com.example.deliveryservice.vo.request.RequestQRcode;
 import com.example.deliveryservice.dto.DeliveryQRDto;
@@ -58,16 +59,16 @@ public class DeliveryServiceImpl implements DeliveryService {
     private ModelMapper mapper;
 
     @PostConstruct
-    public void initMapper(){
+    public void initMapper() {
         mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        DeliveryEntity user =  deliveryRepository.findByEmail(username);
+        DeliveryEntity user = deliveryRepository.findByEmail(username);
 
-        if(user == null) {
+        if (user == null) {
             //throw new UsernameNotFoundException("Not");
             //throw new CustomException(UNAUTHORIZED_MEMBER);
             return null;
@@ -81,7 +82,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public ResponseEntity<ResponseData> login(HttpServletRequest request, HttpServletResponse response, RequestLogin login) {
         DeliveryEntity entity = deliveryRepository.findByEmail(login.getEmail());
-        if(entity == null){
+        if (entity == null) {
             return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "존재하지 않는 배송기사 이메일입니다.", "", ""), HttpStatus.BAD_REQUEST);
         }
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
@@ -92,11 +93,11 @@ public class DeliveryServiceImpl implements DeliveryService {
         // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
         //Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         UserDetails userDetails = loadUserByUsername(authenticationToken.getName());
-        if(userDetails == null){
+        if (userDetails == null) {
             return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "존재하지 않는 배송기사 이메일입니다.", "", ""), HttpStatus.BAD_REQUEST);
         }
 
-        if(!bCryptPasswordEncoder.matches(login.getPassword(), entity.getEncryptedPwd())) {
+        if (!bCryptPasswordEncoder.matches(login.getPassword(), entity.getEncryptedPwd())) {
             log.error("비밀번호오류");
             return new ResponseEntity<>(new ResponseData(StatusEnum.Unauthorized.getStatusCode(), "비밀번호 오류입니다.", "", ""), HttpStatus.UNAUTHORIZED);
         }
@@ -169,7 +170,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     public DeliveryDto getUserDetailsByEmail(String email) {
         DeliveryEntity deliveryEntity = deliveryRepository.findByEmail(email);
 
-        if(deliveryEntity == null){
+        if (deliveryEntity == null) {
             throw new IllegalArgumentException();
         }
 
@@ -205,33 +206,33 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public boolean isDuplicatedUser(String email) {
         DeliveryEntity deliveryEntity = deliveryRepository.findByEmail(email);
-        if(deliveryEntity == null) {
+        if (deliveryEntity == null) {
             return false;
         }
         return true;
     }
 
     @Override
-    public ResponseEntity<ResponseData> updateParcelCompleteState(RequestQRcode qRcode) {
-        QRcode qr = qRcodeRepository.findByQrId(qRcode.getQrId());
-        if(qr == null){
-            return new ResponseEntity<ResponseData>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "존재하지 않는 QR_ID입니다.", "", ""), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ResponseData> updateParcelCompleteState(RequestDeliveryComplete requestDeliveryComplete) {
+        QRcode qr = qRcodeRepository.findByQrId(requestDeliveryComplete.getQrId());
+        if (qr == null) {
+            return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "존재하지 않는 QR_ID입니다.", "", ""), HttpStatus.BAD_REQUEST);
         }
-        if(qr.isComplete()){
-            return new ResponseEntity<ResponseData>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "이미 배송 완료된 물품입니다.", "", ""), HttpStatus.BAD_REQUEST);
+        if (qr.getIsComplete().equals("true")) {
+            return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "이미 배송 완료된 물품입니다.", "", ""), HttpStatus.BAD_REQUEST);
         }
-        qr.setComplete(true);
+        qr.setIsComplete("true");
         qRcodeRepository.save(qr);
 
-        return new ResponseEntity<ResponseData>(new ResponseData(StatusEnum.OK.getStatusCode(), "배송 완료로 상태 업데이트 완료", "", ""), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "배송 완료로 상태 업데이트 완료", "", ""), HttpStatus.OK);
     }
 
     @Override
-    public DeliveryInfoWithQRId getDeliveryInfoThroughId(String deliveryId) {
+    public DeliveryInfoWithQRId getDeliveryInfoThroughId(String deliveryId, String state) {
         DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryId(deliveryId);
         DeliveryInfoWithQRId deliveryInfoWithQRId = new DeliveryInfoWithQRId();
 
-        deliveryInfoWithQRId.setState("배송 시작");
+        deliveryInfoWithQRId.setState(state);
         deliveryInfoWithQRId.setDeliveryName(deliveryEntity.getName());
         deliveryInfoWithQRId.setDeliveryPhoneNumber(deliveryEntity.getPhoneNumber());
 

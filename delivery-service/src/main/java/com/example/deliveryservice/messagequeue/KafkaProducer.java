@@ -23,8 +23,8 @@ public class KafkaProducer {
         objectMapper = new ObjectMapper();
     }
 
-    public DeliveryInfoWithQRId sendUserServiceQRid(String kafkaTopic, DeliveryInfoWithQRId deliveryInfoWithQRId){
-        log.info("Kafka Producer Info -> qrId : {}", deliveryInfoWithQRId.getQrId());
+    public DeliveryInfoWithQRId sendDeliveryStart(String kafkaTopic, DeliveryInfoWithQRId deliveryInfoWithQRId){
+        log.info("Kafka Producer Start Info -> qrId : {}", deliveryInfoWithQRId.getQrId());
         String jsonInString = "";
         try{
             jsonInString = objectMapper.writeValueAsString(deliveryInfoWithQRId);
@@ -35,6 +35,19 @@ public class KafkaProducer {
         kafkaTemplate.send(kafkaTopic, jsonInString);
         log.info("Kafka Producer send data from the Delivery Service : " + deliveryInfoWithQRId);
 
+        return deliveryInfoWithQRId;
+    }
+
+    public DeliveryInfoWithQRId sendDeliveryComplete(String kafkaTopic, DeliveryInfoWithQRId deliveryInfoWithQRId){
+        log.info("Kafka Producer Complete -> qrId : {}", deliveryInfoWithQRId.getQrId());
+        String jsonInString = "";
+        try{
+            jsonInString = objectMapper.writeValueAsString(deliveryInfoWithQRId);
+        } catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+        kafkaTemplate.send(kafkaTopic, jsonInString);
+        log.info("Kafka Producer send data from the Delivery Servoce : " + deliveryInfoWithQRId);
         return deliveryInfoWithQRId;
     }
 
