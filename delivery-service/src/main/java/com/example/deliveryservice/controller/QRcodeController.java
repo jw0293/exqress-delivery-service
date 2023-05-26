@@ -49,7 +49,7 @@ public class QRcodeController {
 
     @Operation(summary = "배송 물품 조회", description = "택배 기사에게 할당된 배송 물품이 조회됩니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ResponseItem.class))),
+            @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = Result.class))),
             @ApiResponse(responseCode = "401", description = "인가되지 않은 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
