@@ -21,11 +21,11 @@ public class ResponseQr {
     private String receiverPhoneNumber;
 
     @Schema(description = "배송 완료 여부", nullable = false, example = "false")
-    private Boolean isComplete;
+    private String isComplete;
 
     @Schema(description = "수령인 주소", nullable = false, example = "서울 중구 장충로 와르르맨션 205호")
     private String address;
 
     @Schema(description = "배송 물품 할당 시간", nullable = false, example = "")
-    private LocalDateTime createdDate;
+    private String createdDate;
 }

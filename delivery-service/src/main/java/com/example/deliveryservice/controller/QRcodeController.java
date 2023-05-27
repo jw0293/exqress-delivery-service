@@ -62,6 +62,8 @@ public class QRcodeController {
     public ResponseEntity<ResponseData> setQRcodeAndReadyStatus(HttpServletRequest request, @RequestBody RequestParcelReady requestParcelReady){
         // JWT에서 기사ID를 가져온다
         String deliveryId = deliveryService.getDeliveryIdThroughRequest(request);
+        log.info("Delivery ID : {}", deliveryId);
+        log.info("QR ID : {}", requestParcelReady.getQrId());
         // 기사ID와 QRcode정보와 ID를 Mapping해준다
         return qRcodeService.mappingQRcode(deliveryId, requestParcelReady.getQrId());
     }

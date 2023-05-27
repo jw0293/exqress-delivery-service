@@ -7,7 +7,6 @@ import com.example.deliveryservice.dto.TokenInfo;
 //import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.entity.DeliveryEntity;
-import com.example.deliveryservice.messagequeue.KafkaProducer;
 import com.example.deliveryservice.repository.DeliveryRepository;
 import com.example.deliveryservice.repository.QRcodeRepository;
 import com.example.deliveryservice.utils.CookieUtils;
@@ -45,7 +44,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private final TokenUtils tokenUtils;
     private final CookieUtils cookieUtils;
-    private final KafkaProducer kafkaProducer;
+    //private final KafkaProducer kafkaProducer;
     private final TokenServiceImpl tokenService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final QRcodeRepository qRcodeRepository;
