@@ -16,5 +16,6 @@ public class TestDataInit {
     @Transactional
     public void initData(){
         qRcodeRepository.save(new QRcode("egjh14813fghasd", "김재한", "010-2211-3322", "딜도", "2931753", "false", "서울 중구 장충로 와르르맨션 205호"));
+        qRcodeRepository.save(new QRcode("1", "신현식", "010-4444-5555", "오나홀", "64141312", "false", "태양계 화성 금딸모음소"));
     }
 }
