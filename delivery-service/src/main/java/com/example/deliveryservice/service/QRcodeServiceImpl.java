@@ -90,7 +90,7 @@ public class QRcodeServiceImpl implements QRcodeService{
     }
 
     public ResponseEntity<ResponseData> updateParcelCompleteState(String deliveryId, RequestParcelComplete requestParcelComplete) {
-        QRcode qr = qRcodeRepository.findByQrId(requestParcelComplete.getInvoiceNo());
+        QRcode qr = qRcodeRepository.findByInvoiceNo(requestParcelComplete.getInvoiceNo());
         if (qr == null) {
             return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "존재하지 않는 운송장 번호입니다.", "", ""), HttpStatus.BAD_REQUEST);
         }
