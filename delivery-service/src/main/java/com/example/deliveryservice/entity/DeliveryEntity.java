@@ -1,14 +1,19 @@
 package com.example.deliveryservice.entity;
 
+import com.example.deliveryservice.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Entity
 @Table
-public class DeliveryEntity {
+public class DeliveryEntity extends BaseTimeEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

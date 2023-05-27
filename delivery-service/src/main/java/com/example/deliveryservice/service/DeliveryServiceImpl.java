@@ -7,15 +7,12 @@ import com.example.deliveryservice.dto.TokenInfo;
 //import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
 import com.example.deliveryservice.entity.DeliveryEntity;
-import com.example.deliveryservice.entity.QRcode;
+import com.example.deliveryservice.messagequeue.KafkaProducer;
 import com.example.deliveryservice.repository.DeliveryRepository;
 import com.example.deliveryservice.repository.QRcodeRepository;
 import com.example.deliveryservice.utils.CookieUtils;
 import com.example.deliveryservice.utils.TokenUtils;
-import com.example.deliveryservice.vo.request.RequestDeliveryComplete;
 import com.example.deliveryservice.vo.request.RequestLogin;
-import com.example.deliveryservice.vo.request.RequestQRcode;
-import com.example.deliveryservice.dto.DeliveryQRDto;
 import com.example.deliveryservice.vo.response.ResponseData;
 import com.example.deliveryservice.vo.response.ResponseDelivery;
 import jakarta.annotation.PostConstruct;
@@ -26,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,15 +43,14 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class DeliveryServiceImpl implements DeliveryService {
 
-    private final Environment env;
     private final TokenUtils tokenUtils;
     private final CookieUtils cookieUtils;
+    private final KafkaProducer kafkaProducer;
     private final TokenServiceImpl tokenService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final QRcodeRepository qRcodeRepository;
     private final DeliveryRepository deliveryRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    // private final DeliveryServiceClient deliveryServiceClient;
     private ModelMapper mapper;
 
     @PostConstruct
@@ -178,25 +173,6 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public DeliveryQRDto mappingQRcode(String deliveryId, RequestQRcode qRcode) {
-        DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryId(deliveryId);
-        QRcode qrCodeEntity = mapper.map(qRcode, QRcode.class);
-        qrCodeEntity.setDeliveryEntity(deliveryEntity);
-
-        deliveryEntity.getQRcodeList().add(qrCodeEntity);
-
-        // save를 해야 변경감지로 저장이 되나?
-        DeliveryQRDto deliveryMapQr = new DeliveryQRDto();
-        deliveryMapQr.setDeliveryId(deliveryEntity.getDeliveryId());
-        deliveryMapQr.setQrId(qRcode.getQrId());
-
-        deliveryRepository.save(deliveryEntity);
-        qRcodeRepository.save(qrCodeEntity);
-
-        return deliveryMapQr;
-    }
-
-    @Override
     public String getDeliveryIdThroughRequest(HttpServletRequest request) {
         String author = request.getHeader(AuthConstants.AUTHORIZATION_HEADER);
         String token = author.substring(7, author.length());
@@ -210,21 +186,6 @@ public class DeliveryServiceImpl implements DeliveryService {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public ResponseEntity<ResponseData> updateParcelCompleteState(RequestDeliveryComplete requestDeliveryComplete) {
-        QRcode qr = qRcodeRepository.findByQrId(requestDeliveryComplete.getQrId());
-        if (qr == null) {
-            return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "존재하지 않는 QR_ID입니다.", "", ""), HttpStatus.BAD_REQUEST);
-        }
-        if (qr.getIsComplete().equals("true")) {
-            return new ResponseEntity<>(new ResponseData(StatusEnum.BAD_REQUEST.getStatusCode(), "이미 배송 완료된 물품입니다.", "", ""), HttpStatus.BAD_REQUEST);
-        }
-        qr.setIsComplete("true");
-        qRcodeRepository.save(qr);
-
-        return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "배송 완료로 상태 업데이트 완료", "", ""), HttpStatus.OK);
     }
 
     @Override

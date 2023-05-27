@@ -1,14 +1,12 @@
 package com.example.deliveryservice.vo.response;
 
-import com.example.deliveryservice.entity.Address;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class ResponseQr {
-
-    @Schema(description = "QR코드 ID", nullable = false, example = "egjh14813fghasd")
-    private String qrId;
 
     @Schema(description = "운송장 번호", nullable = false, example = "012584042")
     private String invoiceNo;
@@ -25,7 +23,9 @@ public class ResponseQr {
     @Schema(description = "배송 완료 여부", nullable = false, example = "false")
     private Boolean isComplete;
 
-    @Schema(description = "수령인 주소", nullable = false, example = "{ \"city\" : \"서울\", \"street\" : \"중구로\", \"zipcode\" : \"48321\"}")
-    private Address address;
+    @Schema(description = "수령인 주소", nullable = false, example = "서울 중구 장충로 와르르맨션 205호")
+    private String address;
 
+    @Schema(description = "배송 물품 할당 시간", nullable = false, example = "")
+    private LocalDateTime createdDate;
 }

@@ -1,6 +1,5 @@
 package com.example.deliveryservice.dto;
 
-import com.example.deliveryservice.entity.Address;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,6 +14,6 @@ public class DeliveryItemDto implements Serializable {
     private String productName;
     private String receiverName;
     private String receiverPhoneNumber;
-    private Address address;
+    private String address;
 
 }

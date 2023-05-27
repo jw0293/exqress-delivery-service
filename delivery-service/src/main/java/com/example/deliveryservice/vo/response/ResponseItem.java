@@ -1,6 +1,5 @@
 package com.example.deliveryservice.vo.response;
 
-import com.example.deliveryservice.entity.Address;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -24,6 +23,6 @@ public class ResponseItem {
     @Schema(description = "배송 완료 여부", nullable = false, example = "True/False")
     private Boolean isComplete;
 
-    @Schema(description = "수령인 주소", nullable = false, example = "서울 중구 장충로")
-    private Address address;
+    @Schema(description = "수령인 주소", nullable = false, example = "서울 중구 장충로 와르르맨션 205호")
+    private String address;
 }

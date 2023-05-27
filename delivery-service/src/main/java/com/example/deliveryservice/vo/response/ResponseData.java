@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public class ResponseData {
+public class ResponseData<T> {
 
     @Schema(description = "상태 코드", nullable = false, example = "200")
     private String status;
@@ -15,8 +14,15 @@ public class ResponseData {
     private String message;
 
     @Schema(description = "데이터", nullable = false)
-    private Object data;
+    private T data;
 
     @Schema(description = "Access Token", nullable = false)
     private String accessToken;
+
+    public ResponseData(String status, String message, T data, String accessToken){
+        this.status = status;
+        this.message = message;
+        this.data = data;
+        this.accessToken = accessToken;
+    }
 }

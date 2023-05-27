@@ -8,6 +8,6 @@ public class DeliveryQRDto {
 
     @Schema(description = "배송기사 ID", nullable = false, example = "gskjseiadw!#@5qe15")
     private String deliveryId;
-    @Schema(description = "QR코드 ID", nullable = false, example = "egjh14813fghasd")
-    private String qrId;
+    @Schema(description = "운송장 번호", nullable = false, example = "454214123341")
+    private String invoiceNo;
 }

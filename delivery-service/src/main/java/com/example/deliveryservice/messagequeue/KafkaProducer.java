@@ -24,7 +24,6 @@ public class KafkaProducer {
     }
 
     public DeliveryInfoWithQRId sendDeliveryStart(String kafkaTopic, DeliveryInfoWithQRId deliveryInfoWithQRId){
-        log.info("Kafka Producer Start Info -> qrId : {}", deliveryInfoWithQRId.getQrId());
         String jsonInString = "";
         try{
             jsonInString = objectMapper.writeValueAsString(deliveryInfoWithQRId);
@@ -39,7 +38,6 @@ public class KafkaProducer {
     }
 
     public DeliveryInfoWithQRId sendDeliveryComplete(String kafkaTopic, DeliveryInfoWithQRId deliveryInfoWithQRId){
-        log.info("Kafka Producer Complete -> qrId : {}", deliveryInfoWithQRId.getQrId());
         String jsonInString = "";
         try{
             jsonInString = objectMapper.writeValueAsString(deliveryInfoWithQRId);

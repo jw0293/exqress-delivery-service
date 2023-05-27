@@ -1,10 +1,8 @@
 package com.example.deliveryservice.utils;
 
-import com.example.deliveryservice.StatusEnum;
 import com.example.deliveryservice.dto.TokenInfo;
 import com.example.deliveryservice.entity.DeliveryEntity;
 import com.example.deliveryservice.repository.DeliveryRepository;
-import com.example.deliveryservice.vo.response.ResponseData;
 import com.example.deliveryservice.vo.response.ResponseDelivery;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
@@ -14,14 +12,10 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 
 import java.util.Base64;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component

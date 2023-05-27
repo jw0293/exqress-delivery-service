@@ -5,16 +5,10 @@ import com.example.deliveryservice.config.MyConfig;
 import com.example.deliveryservice.dto.DeliveryDto;
 import com.example.deliveryservice.service.DeliveryServiceImpl;
 import com.example.deliveryservice.service.TokenServiceImpl;
-import com.example.deliveryservice.utils.CookieUtils;
 import com.example.deliveryservice.vo.request.RequestDelivery;
 import com.example.deliveryservice.vo.request.RequestLogin;
-import com.example.deliveryservice.vo.request.RequestToken;
-import com.example.deliveryservice.vo.response.ResponseData;
-import com.example.deliveryservice.vo.response.ResponseDelivery;
-import com.example.deliveryservice.vo.response.ResponseError;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import com.example.deliveryservice.vo.response.*;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -43,15 +37,15 @@ public class DeliveryController {
 
     @Operation(summary = "배송 기사 회원가입", description = "배송 기사가 회원가입을 시도합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "200", description = "회원가입 성공"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
     @PostMapping("/signUp")
-    public ResponseEntity<ResponseData> createUser(@RequestBody RequestDelivery delivery){
+    public ResponseData<? extends Object> createUser(@RequestBody RequestDelivery delivery){
         String email = delivery.getEmail();
         if(deliveryService.isDuplicatedUser(email)) {
-            return new ResponseEntity<>(new ResponseData(StatusEnum.EXISTED.getStatusCode(), "이미 존재하는 회원입니다.", "", ""), HttpStatus.CONFLICT);
+            return new ResponseData<>(StatusEnum.EXISTED.getStatusCode(), "이미 존재하는 회원입니다.", "", "");
         }
 
         ModelMapper mapper = new ModelMapper();
@@ -60,14 +54,14 @@ public class DeliveryController {
         DeliveryDto deliveryDto = mapper.map(delivery, DeliveryDto.class);
         deliveryService.createUser(deliveryDto);
 
-        ResponseDelivery responseDelivery = mapper.map(deliveryDto, ResponseDelivery.class);
+        ResponseSuccessSignUp responseSuccessSignUp = mapper.map(deliveryDto, ResponseSuccessSignUp.class);
 
-        return new ResponseEntity<>(new ResponseData(StatusEnum.OK.getStatusCode(), "회원가입 성공", responseDelivery, ""), HttpStatus.OK);
+        return new ResponseData<>(StatusEnum.OK.getStatusCode(), "회원가입 성공", responseSuccessSignUp, "");
     }
 
     @Operation(summary = "Token 재발급", description = "토큰 재발급을 시도합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = " 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "200", description = " 성공", content = @Content(schema = @Schema(implementation = ResponseData.class))),
             @ApiResponse(responseCode = "401", description = "인가되지 않은 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
@@ -80,7 +74,7 @@ public class DeliveryController {
 
     @Operation(summary = "배송 기사 로그아웃", description = "배송 기사가 로그아웃을 시도합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그아웃 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공", content = @Content(schema = @Schema(implementation = ResponseData.class))),
             @ApiResponse(responseCode = "401", description = "인가되지 않은 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
@@ -93,7 +87,7 @@ public class DeliveryController {
 
     @Operation(summary = "배송 기사 로그인", description = "배송 기사가 로그인을 시도합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = ResponseDelivery.class))),
+            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = ResponseData.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류 발생", content = @Content(schema = @Schema(implementation = ResponseError.class)))
