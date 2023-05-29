@@ -1,4 +1,4 @@
-package com.example.deliveryservice.messagequeue;
+package com.example.deliveryservice.messagequeue.producer;
 
 import com.example.deliveryservice.dto.DeliveryQRDto;
 import com.example.deliveryservice.dto.kafka.DeliveryInfoWithQRId;
@@ -23,30 +23,16 @@ public class KafkaProducer {
         objectMapper = new ObjectMapper();
     }
 
-    public DeliveryInfoWithQRId sendDeliveryStart(String kafkaTopic, DeliveryInfoWithQRId deliveryInfoWithQRId){
-        String jsonInString = "";
-        try{
-            jsonInString = objectMapper.writeValueAsString(deliveryInfoWithQRId);
-        } catch (JsonProcessingException e){
-            e.printStackTrace();;
-        }
-
-        kafkaTemplate.send(kafkaTopic, jsonInString);
-        log.info("Kafka Producer send data from the Delivery Service : " + deliveryInfoWithQRId);
-
-        return deliveryInfoWithQRId;
-    }
-
-    public DeliveryInfoWithQRId sendDeliveryComplete(String kafkaTopic, DeliveryInfoWithQRId deliveryInfoWithQRId){
+    public void sendUserSeriveForDeliveryState(String kafkaTopic, DeliveryInfoWithQRId deliveryInfoWithQRId){
         String jsonInString = "";
         try{
             jsonInString = objectMapper.writeValueAsString(deliveryInfoWithQRId);
         } catch (JsonProcessingException e){
             e.printStackTrace();
         }
+
         kafkaTemplate.send(kafkaTopic, jsonInString);
-        log.info("Kafka Producer send data from the Delivery Servoce : " + deliveryInfoWithQRId);
-        return deliveryInfoWithQRId;
+        log.info("Kafka Producer send data from the Delivery Service : " + deliveryInfoWithQRId);
     }
 
 }

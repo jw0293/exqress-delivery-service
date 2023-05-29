@@ -1,4 +1,4 @@
-package com.example.deliveryservice.messagequeue;
+package com.example.deliveryservice.messagequeue.producer;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
