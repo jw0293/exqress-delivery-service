@@ -21,7 +21,7 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, String> consumerFactory(){
         Map<String, Object> properties = new HashMap<>();
         // Kafka Server Host:Port
-        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-cluster-kafka-bootstrap.default.svc.cluster.local:9092");
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka.kafka.svc.cluster.local:9092");
         // GroupId는 Kafka에 Topic에 쌓여있는 메세지를 가져갈 수 있는 Consumer를 Grouping
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, "TrackingInfoId");
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
