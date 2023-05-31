@@ -38,8 +38,11 @@ public class QRcode extends BaseTimeEntity implements Serializable {
     @ColumnDefault("false")
     private String isComplete;
 
-    @Column
+    @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false)
+    private String company;
 
     @ManyToOne
     @JoinColumn(name = "delivery_entity_id")

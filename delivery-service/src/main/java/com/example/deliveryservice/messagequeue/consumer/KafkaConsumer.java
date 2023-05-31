@@ -51,6 +51,7 @@ public class KafkaConsumer {
         qRcode.setAddress((String) map.get("address"));
         qRcode.setReceiverName((String) map.get("receiverName"));
         qRcode.setReceiverPhoneNumber((String) map.get("receiverPhoneNumber"));
+        qRcode.setCompany((String) map.get("company"));
 
         return qRcode;
     }
