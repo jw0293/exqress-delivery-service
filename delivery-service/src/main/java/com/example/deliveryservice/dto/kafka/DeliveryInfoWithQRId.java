@@ -12,5 +12,5 @@ public class DeliveryInfoWithQRId {
     @Schema(description = "QR코드 ID", nullable = false, example = "egjh14813fghasd")
     private String deliveryName;
     private String deliveryPhoneNumber;
-    private String state = "배송 시작";
+    private String state;
 }

@@ -82,7 +82,7 @@ public class QRcodeServiceImpl implements QRcodeService{
         qRcodeRepository.save(qRcode);
         // JPA 변경 감지를 통한 Database Save
 
-        DeliveryInfoWithQRId kafkaDeliveryReadyInfo = deliveryService.getDeliveryInfoThroughId(deliveryId, "배송 시작");
+        DeliveryInfoWithQRId kafkaDeliveryReadyInfo = deliveryService.getDeliveryInfoThroughId(deliveryId, "start");
         kafkaDeliveryReadyInfo.setQrId(qrId);
         kafkaProducer.sendUserSeriveForDeliveryState(KafkaTopic.DELIVERY_START, kafkaDeliveryReadyInfo);
 
@@ -100,7 +100,7 @@ public class QRcodeServiceImpl implements QRcodeService{
         qr.setIsComplete("complete");
         qRcodeRepository.save(qr);
 
-        DeliveryInfoWithQRId deliveryInfoThroughId = deliveryService.getDeliveryInfoThroughId(deliveryId, "배송 완료");
+        DeliveryInfoWithQRId deliveryInfoThroughId = deliveryService.getDeliveryInfoThroughId(deliveryId, "complete");
         deliveryInfoThroughId.setQrId(requestParcelComplete.getInvoiceNo());
         kafkaProducer.sendUserSeriveForDeliveryState(KafkaTopic.DELIVERY_COMPLETE, deliveryInfoThroughId);
 
