@@ -72,7 +72,6 @@ public class QRcodeServiceImpl implements QRcodeService{
         qRcode.setDeliveryEntity(deliveryEntity);
         deliveryEntity.getQRcodeList().add(qRcode);
         qRcode.setIsComplete("start");
-        log.info("ReliationShip Mapping : QRcode <-> DeliveryEntity");
 
         DeliveryQRDto deliveryMapQr = new DeliveryQRDto();
         deliveryMapQr.setDeliveryId(deliveryEntity.getDeliveryId());
