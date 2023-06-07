@@ -15,6 +15,7 @@ public class CookieUtils {
     public Cookie createCookie(String cookieName, String value){
         Cookie cookie = new Cookie(cookieName, value);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setMaxAge((int) Long.parseLong(env.getProperty("token.refresh_expiration_time")));
         cookie.setPath("/");
 
